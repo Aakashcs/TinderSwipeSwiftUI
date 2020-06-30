@@ -8,6 +8,14 @@
 
 import SwiftUI
 
+
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
+}
+
+
 struct ContentView: View {
     
     @Environment(\.colorScheme) var scheme
@@ -63,23 +71,6 @@ struct ContentView: View {
         }
     }
 }
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
-}
-
-struct Profile{
-    
-    var id = UUID()
-    var name:String
-    var age:String
-    var photo:String
-    var offset:CGFloat = -1
-    
-}
-
 
 struct ProfileView: View{
     
@@ -180,11 +171,15 @@ struct ProfileView: View{
             }
         }
         .cornerRadius(15)
-        .rotationEffect(.init(degrees: profile.offset == 0 ? 0: (profile.offset > 0 ? 12 : -12)))
+        .rotationEffect(
+            .init(degrees: profile.offset == 0 ? 0 :
+                (profile.offset > 0 ? (profile.offset > 12 ? 12 : Double(profile.offset)) : (profile.offset < -12 ? -12 : Double(profile.offset)))
+            )
+        )
         .offset(x: profile.offset)
         .gesture(DragGesture()
         .onChanged({ (value) in
-            withAnimation(.default) {
+            withAnimation(.spring()) {
                 self.profile.offset = value.translation.width
             }
             
@@ -202,5 +197,15 @@ struct ProfileView: View{
             })
         )
     }
+    
+}
+
+struct Profile{
+    
+    var id = UUID()
+    var name:String
+    var age:String
+    var photo:String
+    var offset:CGFloat = 0
     
 }
